@@ -201,3 +201,23 @@ resource "aws_cloudfront_distribution" "root_distribution" {
   }
 
 }
+
+#S3 JSON Policy
+locals {
+
+  cloudfront_website_bucket_access = jsonencode({
+    "Version" : "2008-10-17",
+    "Id" : "CloudfrontAccess to Website Files",
+    "Statement" : [
+      {
+        "Sid" : "1",
+        "Effect" : "Allow",
+        "Principal" : {
+          "AWS" : "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.cloudfront_oai.id}"
+        },
+        "Action" : "s3:GetObject",
+        "Resource" : "arn:aws:s3:::${aws_s3_bucket.website_files.id}/*"
+      }
+    ]
+  })
+}
