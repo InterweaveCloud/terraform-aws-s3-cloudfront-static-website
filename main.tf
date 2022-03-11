@@ -1,5 +1,6 @@
 #AWS user ID
 data "aws_caller_identity" "current" {}
+
 #S3 bucket to host all website files.
 resource "aws_s3_bucket" "website_files" {
 
@@ -265,6 +266,7 @@ resource "aws_route53_record" "cert_validation" {
   zone_id         = var.hosted_zone_id
 }
 
+#ACM certificate
 resource "aws_acm_certificate_validation" "example" {
   provider = aws.useast1
 
