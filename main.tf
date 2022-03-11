@@ -221,3 +221,9 @@ locals {
     ]
   })
 }
+
+resource "aws_s3_bucket_policy" "website_files" {
+
+  bucket = aws_s3_bucket.website_files.id
+  policy = local.cloudfront_website_bucket_access
+}
