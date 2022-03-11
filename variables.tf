@@ -21,7 +21,7 @@ variable "cloudfront_oai" {
 
 variable "hosted_zone_id" {
   type = string
-  description = "ID for the Hosted zone that handles DNS for TCP and UDP traffic"
+  description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
 }
 
 # variable "domain_name" {
