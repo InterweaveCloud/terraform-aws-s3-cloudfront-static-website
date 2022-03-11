@@ -234,6 +234,8 @@ resource "aws_acm_certificate" "ssl_certificate" {
   provider = aws.useast1
 
   domain_name       = var.domain_name
+
+  # DNS validation requires the domain nameservers to already be pointing to AWS
   validation_method = "DNS"
 
   subject_alternative_names = ["*.${var.domain_name}"]
