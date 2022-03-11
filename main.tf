@@ -227,3 +227,22 @@ resource "aws_s3_bucket_policy" "website_files" {
   bucket = aws_s3_bucket.website_files.id
   policy = local.cloudfront_website_bucket_access
 }
+
+# SSL Certificate with 'DNS' validation method
+resource "aws_acm_certificate" "ssl_certificate" {
+  provider = aws.useast1
+
+  domain_name       = var.domain_name
+  validation_method = "DNS"
+
+  subject_alternative_names = ["*.${var.domain_name}"]
+
+
+  tags = {
+    Name = "${var.bucket_prefix}-cert"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
