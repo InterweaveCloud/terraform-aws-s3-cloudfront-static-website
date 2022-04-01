@@ -2,7 +2,7 @@
 
 [Terraform Module](https://registry.terraform.io/modules/conortm/s3-static-website/aws/latest) for an Amazon S3 Static Website, fronted by a CloundFront Distribution.
 
-Note: This module "works" but is still in development.
+**Note:** This module "works" but is still in development.
 
 
 ## Features
