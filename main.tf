@@ -1,7 +1,10 @@
 #AWS user ID
 data "aws_caller_identity" "current" {}
 
+#-----------------------------------------------------------------------------------------------
 #S3 bucket to host all website files.
+#-----------------------------------------------------------------------------------------------
+
 resource "aws_s3_bucket" "website_files" {
 
   bucket = lower("${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}")
@@ -21,7 +24,9 @@ resource "aws_s3_bucket_versioning" "website_files" {
   }
 }
 
+#-----------------------------------------------------------------------------------------------
 # Cloudfront distribution for main www.s3 site. HTTP requests automatically redirected to HTTPS.
+#-----------------------------------------------------------------------------------------------
 resource "aws_cloudfront_origin_access_identity" "cloudfront_oai" {
   comment = var.cloudfront_oai
 }
@@ -96,6 +101,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     }
 
   }
+
 # Custom error messages
   custom_error_response {
     error_caching_min_ttl = 60
@@ -114,7 +120,9 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
 }
 
+#-----------------------------------------------------------------------------------------------
 # Cloudfront distribution for non-www. s3 site.
+#-----------------------------------------------------------------------------------------------
 resource "aws_cloudfront_distribution" "root_distribution" {
 
   provider = aws.useast1
@@ -203,7 +211,9 @@ resource "aws_cloudfront_distribution" "root_distribution" {
 
 }
 
+#-----------------------------------------------------------------------------------------------
 #S3 JSON Policy
+#-----------------------------------------------------------------------------------------------
 locals {
 
   cloudfront_website_bucket_access = jsonencode({
@@ -229,7 +239,9 @@ resource "aws_s3_bucket_policy" "website_files" {
   policy = local.cloudfront_website_bucket_access
 }
 
+#-----------------------------------------------------------------------------------------------
 # SSL Certificate with 'DNS' validation method
+#-----------------------------------------------------------------------------------------------
 resource "aws_acm_certificate" "ssl_certificate" {
   provider = aws.useast1
 
@@ -250,7 +262,9 @@ resource "aws_acm_certificate" "ssl_certificate" {
   }
 }
 
+#-----------------------------------------------------------------------------------------------
 # Route 53 - DNS Handling for TCP & UDP requests
+#-----------------------------------------------------------------------------------------------
 resource "aws_route53_record" "cert_validation" {
   for_each = {
     for dvo in aws_acm_certificate.ssl_certificate.domain_validation_options : dvo.domain_name => {
@@ -268,7 +282,9 @@ resource "aws_route53_record" "cert_validation" {
   zone_id         = var.hosted_zone_id
 }
 
+#-----------------------------------------------------------------------------------------------
 #ACM certificate
+#-----------------------------------------------------------------------------------------------
 resource "aws_acm_certificate_validation" "example" {
   provider = aws.useast1
 
