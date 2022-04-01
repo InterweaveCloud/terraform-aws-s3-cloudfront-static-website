@@ -24,7 +24,7 @@ variable "hosted_zone_id" {
   description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
 }
 
-# variable "domain_name" {
-#   type = string
-#   description = ""
-# }
+variable "version" {
+   type = string
+   description = "Terraform version"
+ }

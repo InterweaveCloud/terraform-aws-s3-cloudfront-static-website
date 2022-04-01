@@ -29,7 +29,7 @@ module "website" {
   s3_origin_id = "DON-test-sites3originID"
   cloudfront_oai = "DON-test-siteOAI"
   hosted_zone_id = ""
-  version = ""
+  version = "4.4.0"
 
 }
 ```
