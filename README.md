@@ -24,12 +24,12 @@ It requires (for now?) that the following have been setup outside this module:
 module "website" {
   source = "github.com/DevOpsNavy/s3-cloudfront-static-website"
   
-  bucket_prefix = "DON-test-site"
-  domain_name = "DON-test-site.com"
-  s3_origin_id = "DON-test-sites3originID"
-  cloudfront_oai = "DON-test-siteOAI"
+  bucket_prefix = ""
+  domain_name = ""
+  s3_origin_id = ""
+  cloudfront_oai = ""
   hosted_zone_id = ""
-  version = "4.4.0"
+  version = ""
 
 }
 ```
