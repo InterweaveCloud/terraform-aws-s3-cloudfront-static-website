@@ -7,7 +7,7 @@
 
 ## Features
 
-This module allows for Hosting a Static Website on Amazon S3, provisioning the following:
+This module allows for [Hosting a Static Website on Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html), provisioning the following:
 
  -  S3 Bucket for static public files
  -  CloudFront Distribution fronting the S3 Bucket
