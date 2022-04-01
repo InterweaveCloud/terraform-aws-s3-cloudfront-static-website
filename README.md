@@ -20,7 +20,7 @@ It requires (for now?) that the following have been setup outside this module:
 
 ## Usage
 ```javascript
-#Module AP
+# Module AP
 module "website" {
   source = "github.com/DevOpsNavy/s3-cloudfront-static-website"
   
