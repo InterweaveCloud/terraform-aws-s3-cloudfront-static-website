@@ -28,8 +28,13 @@ module "website" {
   domain_name = "DON-test-site.com"
   s3_origin_id = "DON-test-sites3originID"
   cloudfront_oai = "DON-test-siteOAI"
+<<<<<<< HEAD
   hosted_zone_id = ""
   version = ""
+=======
+  #hosted_zone_id = ""
+  #version = ""
+>>>>>>> 3dc8df2c57ef0cd2379b1f25c57ae90dec619b1c
 
 }
 ```
@@ -53,4 +58,8 @@ module "website" {
 
 
 ## TO-DO
+<<<<<<< HEAD
 ...
+=======
+...
+>>>>>>> 3dc8df2c57ef0cd2379b1f25c57ae90dec619b1c
