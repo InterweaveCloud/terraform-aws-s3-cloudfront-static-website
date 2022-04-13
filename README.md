@@ -1,6 +1,6 @@
 # AWS S3 Static Website Terraform Module
 
-[Terraform Module](https://registry.terraform.io/modules/conortm/s3-static-website/aws/latest) for an Amazon S3 Static Website, fronted by a CloundFront Distribution.
+[Terraform Module](https://registry.terraform.io/modules/conortm/s3-static-website/aws/latest) for an AWS S3 Static Website, fronted by a CloundFront Distribution.
 
 **Note:** This module "works" but is still in development.
 
