@@ -18,7 +18,7 @@ variable "resource_uid" {
 }
 
 #------------------------------------------------------------------------------
-# Optional Variables for S3 Bucket
+# Optional Variables
 #------------------------------------------------------------------------------
 
 variable "bucket_versioning" {
