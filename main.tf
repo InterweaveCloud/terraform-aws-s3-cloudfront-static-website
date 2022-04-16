@@ -7,31 +7,22 @@ locals {
     Application = "${var.Application}"
   }
 }
-
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 #S3 bucket to host all website files.
-#-----------------------------------------------------------------------------------------------
-
-resource "random_id" "bucket_append" {
-  keepers = {
-    ami_id = "${var.resource_uid}"
-  }
-  byte_length = 8
-}
+#------------------------------------------------------------------------------
 
 resource "aws_s3_bucket" "website_files" {
-  bucket        = lower("${var.resource_uid}-${data.aws_caller_identity.current.account_id}-${random_id.bucket_append.id}")
-  force_destroy = "true"
+  # Remove all non alphanumerical characters with - and lowercase the string
+  bucket_prefix = lower(join("-", regexall("[[:alnum:]]*", var.resource_uid)))
   tags          = local.tags
 }
 
-# Private S3 bucket preferred for security
+# Private S3 bucket enforced for security
 resource "aws_s3_bucket_acl" "website_files" {
   bucket = aws_s3_bucket.website_files.id
   acl    = "private"
 }
 
-# Versioning enabled to allow recovery of accidentally over written files
 resource "aws_s3_bucket_versioning" "website_files" {
   bucket = aws_s3_bucket.website_files.id
   versioning_configuration {
@@ -39,9 +30,9 @@ resource "aws_s3_bucket_versioning" "website_files" {
   }
 }
 
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # Create SSL Certificate, route53 records for validation and then validate the certificate
-#-----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 resource "aws_acm_certificate" "ssl_certificate" {
   provider = aws.useast1
 
@@ -81,9 +72,10 @@ resource "aws_acm_certificate_validation" "ssl_certificate_validation" {
   validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
 }
 
-# -----------------------------------------------------------------------------------------------
-# Cloudfront distribution for main www.s3 site. HTTP requests automatically redirected to HTTPS.
-# -----------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# Cloudfront distribution for main www.s3 site. HTTP requests automatically 
+# redirected to HTTPS.
+#------------------------------------------------------------------------------
 resource "aws_cloudfront_origin_access_identity" "cloudfront_oai" {
   comment = "${var.resource_uid}_OAI"
 }

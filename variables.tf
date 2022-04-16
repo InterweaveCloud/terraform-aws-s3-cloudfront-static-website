@@ -1,8 +1,39 @@
-# Variable access file - values entrered through module
+#------------------------------------------------------------------------------
+# Required Variables
+#------------------------------------------------------------------------------
+
+variable "domain_name" {
+  type        = string
+  description = "The domain name for the website."
+}
+
+variable "hosted_zone_id" {
+  type        = string
+  description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
+}
+
 variable "resource_uid" {
   type        = string
   description = "UID which will be prepended to resources created by this module"
 }
+
+#------------------------------------------------------------------------------
+# Required if sync files is used
+#------------------------------------------------------------------------------
+
+variable "website_content_directory" {
+  type        = string
+  description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
+}
+
+variable "profile" {
+  type        = string
+  description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
+}
+
+#------------------------------------------------------------------------------
+# Optional Variables for Tagging
+#------------------------------------------------------------------------------
 
 variable "Environment" {
   type        = string
@@ -14,25 +45,4 @@ variable "Application" {
   type        = string
   description = "Environment to tag all resources created by this module"
   default     = "S3 Static Website"
-}
-
-variable "domain_name" {
-  type        = string
-  description = "The domain name for the website."
-}
-
-
-variable "hosted_zone_id" {
-  type        = string
-  description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
-}
-
-variable "website_content_directory" {
-  type        = string
-  description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
-}
-
-variable "profile" {
-  type        = string
-  description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
 }
