@@ -26,3 +26,13 @@ variable "hosted_zone_id" {
   type        = string
   description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
 }
+
+variable "website_content_directory" {
+  type        = string
+  description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
+}
+
+variable "profile" {
+  type        = string
+  description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
+}

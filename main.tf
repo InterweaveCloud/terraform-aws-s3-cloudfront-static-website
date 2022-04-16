@@ -232,3 +232,21 @@ resource "aws_route53_record" "www-a" {
     evaluate_target_health = false
   }
 }
+
+data "archive_file" "website_content_zip" {
+  type        = "zip"
+  source_dir = var.website_content_directory
+  output_path = "builds/${aws_s3_bucket.website_files.id}.zip"
+}
+
+resource "null_resource" "sync_remote_website_content" {
+  
+  provisioner "local-exec" {
+    working_dir = var.website_content_directory
+    command = "aws s3 sync . s3://${aws_s3_bucket.website_files.id}/ --delete --profile ${var.profile}"
+  }
+
+  triggers =  {
+    filesha256 = filesha256(data.archive_file.website_content_zip.output_path)
+  }
+}
