@@ -84,252 +84,151 @@ resource "aws_acm_certificate_validation" "ssl_certificate_validation" {
 # -----------------------------------------------------------------------------------------------
 # Cloudfront distribution for main www.s3 site. HTTP requests automatically redirected to HTTPS.
 # -----------------------------------------------------------------------------------------------
-# resource "aws_cloudfront_origin_access_identity" "cloudfront_oai" {
-#   comment = var.cloudfront_oai
-# }
+resource "aws_cloudfront_origin_access_identity" "cloudfront_oai" {
+  comment = "${var.resource_uid}_OAI"
+}
 
-# resource "aws_cloudfront_distribution" "s3_distribution" {
+locals {
+  origin_id = "${var.resource_uid}_origin_id"
+}
 
-#   provider = aws.useast1
+resource "aws_cloudfront_distribution" "s3_distribution" {
 
-#   origin {
-#     domain_name = aws_s3_bucket.website_files.bucket_regional_domain_name
-#     origin_id   = var.s3_origin_id
+  provider = aws.useast1
 
-#     s3_origin_config {
-#       origin_access_identity = aws_cloudfront_origin_access_identity.cloudfront_oai.cloudfront_access_identity_path
-#     }
-#   }
+  origin {
+    domain_name = aws_s3_bucket.website_files.bucket_regional_domain_name
+    origin_id   = local.origin_id
 
-#   enabled             = true
-#   is_ipv6_enabled     = true
-#   comment             = "${var.bucket_prefix}-CloudfrontDistribution"
-#   default_root_object = "index.html"
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.cloudfront_oai.cloudfront_access_identity_path
+    }
+  }
 
-#   # Default cache behaviour
-#   default_cache_behavior {
+  enabled             = true
+  is_ipv6_enabled     = true
+  comment             = "${var.resource_uid}-CloudfrontDistribution"
+  default_root_object = "index.html"
 
-#     allowed_methods  = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
-#     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-#     target_origin_id = var.s3_origin_id
-#     forwarded_values {
-#       query_string = false
+  # Default cache behaviour
+  default_cache_behavior {
 
-#       cookies {
-#         forward = "none"
-#       }
-#     }
+    allowed_methods  = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = local.origin_id
+    forwarded_values {
+      query_string = false
 
-#     viewer_protocol_policy = "redirect-to-https"
-#     min_ttl                = 0
-#     default_ttl            = 3600
-#     max_ttl                = 86400
-#   }
+      cookies {
+        forward = "none"
+      }
+    }
 
-#   # Cache behavior with precedence 0 - takes priority over the Default cache behaviour
-#   ordered_cache_behavior {
-#     path_pattern     = "/content/immutable/*"
-#     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-#     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-#     target_origin_id = var.s3_origin_id
+    viewer_protocol_policy = "redirect-to-https"
+    min_ttl                = 0
+    default_ttl            = 3600
+    max_ttl                = 86400
+  }
 
-#     forwarded_values {
-#       query_string = false
-#       headers      = ["Origin"]
+  # Cache behavior with precedence 0 - takes priority over the Default cache behaviour
+  ordered_cache_behavior {
+    path_pattern     = "/content/immutable/*"
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = local.origin_id
 
-#       cookies {
-#         forward = "none"
-#       }
-#     }
+    forwarded_values {
+      query_string = false
+      headers      = ["Origin"]
 
-#     # TTL value for the period of time that a packet/data should exist before being discarded.
-#     min_ttl                = 0
-#     default_ttl            = 86400
-#     max_ttl                = 31536000
-#     compress               = true
-#     viewer_protocol_policy = "redirect-to-https"
-#   }
+      cookies {
+        forward = "none"
+      }
+    }
 
-#   price_class = "PriceClass_200"
+    # TTL value for the period of time that a packet/data should exist before being discarded.
+    min_ttl                = 0
+    default_ttl            = 86400
+    max_ttl                = 31536000
+    compress               = true
+    viewer_protocol_policy = "redirect-to-https"
+  }
 
-#   restrictions {
-#     geo_restriction {
-#       restriction_type = "none"
-#     }
+  price_class = "PriceClass_200"
 
-#   }
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
 
-#   # Custom error messages
-#   custom_error_response {
-#     error_caching_min_ttl = 60
-#     error_code            = 403
-#     response_code         = 200
-#     response_page_path    = "/"
-#   }
+  }
 
-#   aliases = ["www.${var.domain_name}"] # www. site
+  # Custom error messages
+  custom_error_response {
+    error_caching_min_ttl = 60
+    error_code            = 403
+    response_code         = 200
+    response_page_path    = "/"
+  }
 
-#   viewer_certificate {
-#     acm_certificate_arn      = aws_acm_certificate_validation.example.certificate_arn
-#     ssl_support_method       = "sni-only"
-#     minimum_protocol_version = "TLSv1.1_2016"
-#   }
+  aliases = ["${var.domain_name}", "www.${var.domain_name}"]
 
-# }
+  viewer_certificate {
+    acm_certificate_arn      = aws_acm_certificate_validation.ssl_certificate_validation.certificate_arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.1_2016"
+  }
+
+}
 
 #-----------------------------------------------------------------------------------------------
-# Cloudfront distribution for non-www. s3 site.
+# Provide Permissions to allow the Cloudfront distribution to access the S3 bucket
 #-----------------------------------------------------------------------------------------------
-#  resource "aws_cloudfront_distribution" "root_distribution" {
+locals {
 
-//   provider = aws.useast1
+  cloudfront_website_bucket_access = jsonencode({
+    "Version" : "2008-10-17",
+    "Id" : "CloudfrontAccess to Website Files",
+    "Statement" : [
+      {
+        "Sid" : "1",
+        "Effect" : "Allow",
+        "Principal" : {
+          "AWS" : "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.cloudfront_oai.id}"
+        },
+        "Action" : "s3:GetObject",
+        "Resource" : "arn:aws:s3:::${aws_s3_bucket.website_files.id}/*"
+      }
+    ]
+  })
+}
 
-//   origin {
-//     domain_name = aws_s3_bucket.website_files.bucket_regional_domain_name
-//     origin_id   = var.s3_origin_id
+resource "aws_s3_bucket_policy" "website_files" {
 
-//     s3_origin_config {
-//       origin_access_identity = aws_cloudfront_origin_access_identity.cloudfront_oai.cloudfront_access_identity_path
-//     }
-//   }
+  bucket = aws_s3_bucket.website_files.id
+  policy = local.cloudfront_website_bucket_access
+}
 
-//   enabled             = true
-//   is_ipv6_enabled     = true
-//   comment             = "${var.bucket_prefix}-CloudfrontDistribution"
-//   default_root_object = "index.html"
+resource "aws_route53_record" "root-a" {
+  zone_id = var.hosted_zone_id
+  name    = var.domain_name
+  type    = "A"
 
-// # Default cache behaviour
-//   default_cache_behavior {
+  alias {
+    name                   = aws_cloudfront_distribution.s3_distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.s3_distribution.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
 
-//     allowed_methods  = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
-//     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-//     target_origin_id = var.s3_origin_id
-//     forwarded_values {
-//       query_string = false
+resource "aws_route53_record" "www-a" {
+  zone_id = var.hosted_zone_id
+  name    = "www.${var.domain_name}"
+  type    = "A"
 
-//       cookies {
-//         forward = "none"
-//       }
-//     }
-
-//     viewer_protocol_policy = "redirect-to-https"
-//     min_ttl                = 0
-//     default_ttl            = 3600
-//     max_ttl                = 86400
-//   }
-
-//   # Cache behavior with precedence 0
-//   ordered_cache_behavior {
-//     path_pattern     = "/content/immutable/*"
-//     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-//     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-//     target_origin_id = var.s3_origin_id
-
-//     forwarded_values {
-//       query_string = false
-//       headers      = ["Origin"]
-
-//       cookies {
-//         forward = "none"
-//       }
-//     }
-
-//     min_ttl                = 0
-//     default_ttl            = 86400
-//     max_ttl                = 31536000
-//     compress               = true
-//     viewer_protocol_policy = "redirect-to-https"
-//   }
-
-//   price_class = "PriceClass_200"
-
-//   restrictions {
-//     geo_restriction {
-//       restriction_type = "none"
-//     }
-
-//   }
-
-//   custom_error_response {
-//     error_caching_min_ttl = 60
-//     error_code            = 403
-//     response_code         = 200
-//     response_page_path    = "/"
-//   }
-
-// # non-www site
-//   aliases = ["${var.domain_name}"]
-
-//   viewer_certificate {
-//     acm_certificate_arn      = aws_acm_certificate_validation.example.certificate_arn
-//     ssl_support_method       = "sni-only"
-//     minimum_protocol_version = "TLSv1.1_2016"
-//   }
-
-// }
-
-// #-----------------------------------------------------------------------------------------------
-// #S3 JSON Policy
-// #-----------------------------------------------------------------------------------------------
-// // locals {
-
-// //   cloudfront_website_bucket_access = jsonencode({
-// //     "Version" : "2008-10-17",
-// //     "Id" : "CloudfrontAccess to Website Files",
-// //     "Statement" : [
-// //       {
-// //         "Sid" : "1",
-// //         "Effect" : "Allow",
-// //         "Principal" : {
-// //           "AWS" : "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.cloudfront_oai.id}"
-// //         },
-// //         "Action" : "s3:GetObject",
-// //         "Resource" : "arn:aws:s3:::${aws_s3_bucket.website_files.id}/*"
-// //       }
-// //     ]
-// //   })
-// // }
-
-// resource "aws_s3_bucket_policy" "website_files" {
-
-//   bucket = aws_s3_bucket.website_files.id
-//   policy = local.cloudfront_website_bucket_access
-// }
-
-
-
-
-
-// #-----------------------------------------------------------------------------------------------
-// #ACM certificate
-// #-----------------------------------------------------------------------------------------------
-// resource "aws_acm_certificate_validation" "example" {
-//   provider = aws.useast1
-
-//   certificate_arn         = aws_acm_certificate.ssl_certificate.arn
-//   validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
-// }
-
-// resource "aws_route53_record" "www-a" {
-//   zone_id = var.hosted_zone_id
-//   name    = "www.${var.domain_name}"
-//   type    = "A"
-
-//   alias {
-//     name                   = aws_cloudfront_distribution.s3_distribution.domain_name
-//     zone_id                = aws_cloudfront_distribution.s3_distribution.hosted_zone_id
-//     evaluate_target_health = false
-//   }
-// }
-
-// resource "aws_route53_record" "root-a" {
-//   zone_id = var.hosted_zone_id
-//   name    = var.domain_name
-//   type    = "A"
-
-//   alias {
-//     name                   = aws_cloudfront_distribution.root_distribution.domain_name
-//     zone_id                = aws_cloudfront_distribution.root_distribution.hosted_zone_id
-//     evaluate_target_health = false
-//   }
-// }
+  alias {
+    name                   = aws_cloudfront_distribution.s3_distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.s3_distribution.hosted_zone_id
+    evaluate_target_health = false
+  }
+}

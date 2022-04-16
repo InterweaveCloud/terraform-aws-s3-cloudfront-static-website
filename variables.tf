@@ -21,15 +21,6 @@ variable "domain_name" {
   description = "The domain name for the website."
 }
 
-variable "s3_origin_id" {
-  type        = string
-  description = "Origin name for the S3's CloudFront distribution"
-}
-
-variable "cloudfront_oai" {
-  type        = string
-  description = "Origin access identity name"
-}
 
 variable "hosted_zone_id" {
   type        = string
