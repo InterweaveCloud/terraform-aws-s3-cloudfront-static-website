@@ -1,15 +1,28 @@
 #AWS user ID
 data "aws_caller_identity" "current" {}
 
+locals {
+  tags = {
+    Environment = "${var.Environment}"
+    Application = "${var.Application}"
+  }
+}
+
 #-----------------------------------------------------------------------------------------------
 #S3 bucket to host all website files.
 #-----------------------------------------------------------------------------------------------
 
+resource "random_id" "bucket_append" {
+  keepers = {
+    ami_id = "${var.resource_uid}"
+  }
+  byte_length = 8
+}
+
 resource "aws_s3_bucket" "website_files" {
-
-  bucket = lower("${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}")
-
+  bucket        = lower("${var.resource_uid}-${data.aws_caller_identity.current.account_id}-${random_id.bucket_append.id}")
   force_destroy = "true"
+  tags          = local.tags
 }
 
 // resource "aws_s3_bucket_acl" "website_files" {
