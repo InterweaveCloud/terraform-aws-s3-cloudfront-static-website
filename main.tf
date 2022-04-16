@@ -24,6 +24,7 @@ resource "aws_s3_bucket_acl" "website_files" {
 }
 
 resource "aws_s3_bucket_versioning" "website_files" {
+  count = var.bucket_versioning ? 1 : 0
   bucket = aws_s3_bucket.website_files.id
   versioning_configuration {
     status = "Enabled"
