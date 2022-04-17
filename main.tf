@@ -86,7 +86,6 @@ locals {
 }
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
-
   provider = aws.useast1
 
   origin {
@@ -98,78 +97,47 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     }
   }
 
-  enabled             = true
+  enabled             = var.enable_cloudfront_distribution
   is_ipv6_enabled     = true
   comment             = "${var.resource_uid}-CloudfrontDistribution"
-  default_root_object = "index.html"
+  default_root_object = var.default_root_object
 
   # Default cache behaviour
   default_cache_behavior {
-
-    allowed_methods  = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    allowed_methods  = var.default_cache_allowed_methods
+    cached_methods   = var.default_cache_methods
     target_origin_id = local.origin_id
+
     forwarded_values {
-      query_string = false
+      query_string = var.default_cache_forward_query_string
 
       cookies {
         forward = "none"
       }
     }
 
-    viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
+    viewer_protocol_policy = var.default_cache_viewer_protocol_policy
+    min_ttl                = var.default_cache_min_ttl
+    default_ttl            = var.default_cache_default_ttl
+    max_ttl                = var.default_cache_max_ttl
   }
 
-  # Cache behavior with precedence 0 - takes priority over the Default cache behaviour
-  ordered_cache_behavior {
-    path_pattern     = "/content/immutable/*"
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = local.origin_id
-
-    forwarded_values {
-      query_string = false
-      headers      = ["Origin"]
-
-      cookies {
-        forward = "none"
-      }
-    }
-
-    # TTL value for the period of time that a packet/data should exist before being discarded.
-    min_ttl                = 0
-    default_ttl            = 86400
-    max_ttl                = 31536000
-    compress               = true
-    viewer_protocol_policy = "redirect-to-https"
-  }
-
-  price_class = "PriceClass_200"
+  price_class = var.cloudfront_price_class
 
   restrictions {
     geo_restriction {
-      restriction_type = "none"
+      restriction_type = var.cloudfront_geo_restriction_type
+      locations = var.cloudfront_geo_restriction_locations
     }
 
-  }
-
-  # Custom error messages
-  custom_error_response {
-    error_caching_min_ttl = 60
-    error_code            = 403
-    response_code         = 200
-    response_page_path    = "/"
   }
 
   aliases = ["${var.domain_name}", "www.${var.domain_name}"]
 
   viewer_certificate {
     acm_certificate_arn      = aws_acm_certificate_validation.ssl_certificate_validation.certificate_arn
-    ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.1_2016"
+    ssl_support_method       = var.cloudfront_ssl_support_method
+    minimum_protocol_version = var.cloudfront_minimum_protocol_version
   }
 
 }
