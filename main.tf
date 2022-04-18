@@ -197,7 +197,7 @@ resource "aws_route53_record" "www-a" {
 data "archive_file" "website_content_zip" {
   count       = length(var.sync_directories)
   type        = "zip"
-  source_dir  = var.website_content_directory
+  source_dir  = var.sync_directories[count.index].local_source_directory
   output_path = "builds/${var.sync_directories[count.index].local_source_directory}.zip"
 }
 

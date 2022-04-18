@@ -6,10 +6,10 @@ module "website" {
   hosted_zone_id = "XXX"
   profile        = "XXX"
 
-  sync_directories {
+  sync_directories = [{
     source = "./website_content"
     target = "/"
-  }
+  }]
 
   providers = {
     aws.useast1 = aws.useast1
