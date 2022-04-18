@@ -69,10 +69,8 @@ module "website" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_archive"></a> [archive](#provider\_archive) | n/a |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 4.10.0 |
 | <a name="provider_aws.useast1"></a> [aws.useast1](#provider\_aws.useast1) | 4.10.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
 
@@ -160,3 +158,50 @@ No modules.
 | <a name="output_s3_bucket_id"></a> [s3\_bucket\_id](#output\_s3\_bucket\_id) | The name of the bucket. |
 | <a name="output_s3_bucket_region"></a> [s3\_bucket\_region](#output\_s3\_bucket\_region) | The AWS region this bucket resides in. |
 | <a name="output_s3_bucket_versioning"></a> [s3\_bucket\_versioning](#output\_s3\_bucket\_versioning) | The bucket versioning status. |
+
+
+Bug Reports & Feature Requests
+Please use the issue tracker to report any bugs or file feature requests.
+
+Developing
+If you are interested in being a contributor and want to get involved in developing this project or help out with our other projects, we would love to hear from you! Shoot us an email.
+
+In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
+
+Fork the repo on GitHub
+Clone the project to your own machine
+Commit changes to your own branch
+Push your work back up to your fork
+Submit a Pull Request so that we can review your changes
+NOTE: Be sure to merge the latest changes from "upstream" before making a pull request!
+
+## To Do
+
+## Contributing
+
+[ToDo are captured within the GitHub project associated with this module](https://github.com/DevOpsNavy/s3-cloudfront-static-website/projects/1)
+
+### Bug Reports & Feature Requests
+
+Please use the [issue tracker](https://github.com/DevOpsNavy/s3-cloudfront-static-website/issues) to report any bugs or file feature requests.
+
+### Developing
+
+If you are interested in being a contributor and want to get involved in developing this project or [help out](https://cpco.io/help-out) with our other projects, we would love to hear from you! Shoot us an [email][email].
+
+In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
+
+ 1. **Fork** the repo on GitHub
+ 2. **Clone** the project to your own machine
+ 3. **Commit** changes to your own branch
+ 4. **Push** your work back up to your fork
+ 5. Submit a **Pull Request** so that we can review your changes
+
+**NOTE:** Be sure to merge the latest changes from "upstream" before making a pull request!
+
+## Contributors
+
+| Name | Role |
+|------|---------|
+| [Faizan Raza](https://www.linkedin.com/in/faizan-raza-997808206/) | Lead Developer |
+| [Vic Hassan](https://www.linkedin.com/in/vic-prince-hassan-619505171/) | Developer |
