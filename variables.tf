@@ -131,6 +131,15 @@ variable "profile" {
   description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
 }
 
+variable "sync_directories" {
+  type = list(object({
+    local_source_directory = string
+    s3_target_directory    = string
+  }))
+  description = "Directories to sync with S3"
+  default     = []
+}
+
 #------------------------------------------------------------------------------
 # Optional Variables for Tagging
 #------------------------------------------------------------------------------

@@ -24,7 +24,7 @@ resource "aws_s3_bucket_acl" "website_files" {
 }
 
 resource "aws_s3_bucket_versioning" "website_files" {
-  count = var.bucket_versioning ? 1 : 0
+  count  = var.bucket_versioning ? 1 : 0
   bucket = aws_s3_bucket.website_files.id
   versioning_configuration {
     status = "Enabled"
@@ -127,7 +127,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   restrictions {
     geo_restriction {
       restriction_type = var.cloudfront_geo_restriction_type
-      locations = var.cloudfront_geo_restriction_locations
+      locations        = var.cloudfront_geo_restriction_locations
     }
 
   }
@@ -195,19 +195,23 @@ resource "aws_route53_record" "www-a" {
 }
 
 data "archive_file" "website_content_zip" {
+  count       = length(var.sync_directories)
   type        = "zip"
-  source_dir = var.website_content_directory
-  output_path = "builds/${aws_s3_bucket.website_files.id}.zip"
+  source_dir  = var.website_content_directory
+  output_path = "builds/${var.sync_directories[count.index].local_source_directory}.zip"
 }
 
 resource "null_resource" "sync_remote_website_content" {
-  
+  count = length(var.sync_directories)
+
   provisioner "local-exec" {
-    working_dir = var.website_content_directory
-    command = "aws s3 sync . s3://${aws_s3_bucket.website_files.id}/ --delete --profile ${var.profile}"
+    working_dir = var.sync_directories[count.index].local_source_directory
+    command     = "aws s3 sync . s3://${aws_s3_bucket.website_files.id}/${var.sync_directories[count.index].s3_target_directory} --delete --profile ${var.profile}"
   }
 
-  triggers =  {
-    filesha256 = filesha256(data.archive_file.website_content_zip.output_path)
+  triggers = {
+    filesha256             = filesha256(data.archive_file.website_content_zip[count.index].output_path)
+    local_source_directory = var.sync_directories[count.index].local_source_directory
+    s3_target_directory    = var.sync_directories[count.index].s3_target_directory
   }
 }
