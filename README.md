@@ -1,17 +1,19 @@
-# AWS S3 Static Website Terraform Module
+# AWS S3 CloudFront Static Website Terraform Module
 
-[Terraform Module](https://registry.terraform.io/modules/conortm/s3-static-website/aws/latest) for an AWS S3 Static Website, fronted by a CloundFront Distribution.
+This module provisions the infrasructure required for a static website hosted on AWS S3 and CloudFront and optionally allows syncronisation of the website content with a local directory. 
 
-**Note:** This module "works" but is still in development.
+ creates an [S3 Bucket](https://aws.amazon.com/s3/) to creates a [CloudFront Distribution](https://aws.amazon.com/cloudfront/),
 
 
-## Features
+## Key Features
 
-This module allows for [Hosting a Static Website on Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html), provisioning the following:
+ -  [S3 Bucket](https://aws.amazon.com/s3/) to store website content.
+ -  [CloudFront Distribution](https://aws.amazon.com/cloudfront/) to serve the website at edge locations at a low cost and high performance.
+ -  [Route 53](https://aws.amazon.com/route53/) A records to utilise custom domain on website.
+ -  Security First - S3 Bucket is private with IAM policies to provide permissions to CloudFront.
+ -  Utilises aws S3 sync command to upload website content to S3 Bucket.
 
- -  S3 Bucket for static public files
- -  CloudFront Distribution fronting the S3 Bucket
- -  Route 53 Record Set aliased to the CloudFront Distribution
+## Requirements
 
 It requires (for now?) that the following have been setup outside this module:
 
