@@ -121,14 +121,9 @@ variable "default_cache_forward_query_string" {
 # Required if sync files is used
 #------------------------------------------------------------------------------
 
-variable "website_content_directory" {
-  type        = string
-  description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
-}
-
 variable "profile" {
   type        = string
-  description = "The Hosted Zone ID. This is automatically generated and can be referenced by zone records."
+  description = "Credentials profile to use for aws s3 sync command"
 }
 
 variable "sync_directories" {
