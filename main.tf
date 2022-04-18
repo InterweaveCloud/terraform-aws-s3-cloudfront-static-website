@@ -8,7 +8,7 @@ locals {
   }
 }
 #------------------------------------------------------------------------------
-#S3 bucket to host all website files.
+# S3 bucket to host all website files.
 #------------------------------------------------------------------------------
 
 resource "aws_s3_bucket" "website_files" {
