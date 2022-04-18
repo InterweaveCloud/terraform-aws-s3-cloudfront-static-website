@@ -193,7 +193,11 @@ resource "aws_route53_record" "www-a" {
     evaluate_target_health = false
   }
 }
+#-----------------------------------------------------------------------------------------------
+# Upload Files
+#-----------------------------------------------------------------------------------------------
 
+# Create zip files to allow generation of hash and detect changes in contents
 data "archive_file" "website_content_zip" {
   count       = length(var.sync_directories)
   type        = "zip"
@@ -209,6 +213,7 @@ resource "null_resource" "sync_remote_website_content" {
     command     = "aws s3 sync . s3://${aws_s3_bucket.website_files.id}/${var.sync_directories[count.index].s3_target_directory} --delete --profile ${var.profile}"
   }
 
+  # Reuploads triggered by changes in directories or content
   triggers = {
     filesha256             = filesha256(data.archive_file.website_content_zip[count.index].output_path)
     local_source_directory = var.sync_directories[count.index].local_source_directory

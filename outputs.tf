@@ -160,3 +160,21 @@ output "cloudfront_distribution_hosted_zone_id" {
   value       = aws_cloudfront_distribution.s3_distribution.hosted_zone_id
 }
 
+#------------------------------------------------------------------------------
+# Route 53 Records
+#------------------------------------------------------------------------------
+
+output "route53_root_a_record_name" {
+  description = "The name of the root A record."
+  value       = aws_route53_record.root-a.name
+}
+
+output "route53_root_www_record_name" {
+  description = "The name of the www A record."
+  value       = aws_route53_record.www-a.name
+}
+
+output "route53_acm_certificate_validation_records" {
+  description = "Route 53 validation records for the ACM certificate."
+  value       = aws_route53_record.cert_validation
+}
