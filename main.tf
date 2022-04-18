@@ -155,7 +155,7 @@ locals {
         "Sid" : "1",
         "Effect" : "Allow",
         "Principal" : {
-          "AWS" : "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.cloudfront_oai.id}"
+          "AWS" : "${aws_cloudfront_origin_access_identity.cloudfront_oai.iam_arn}"
         },
         "Action" : "s3:GetObject",
         "Resource" : "arn:aws:s3:::${aws_s3_bucket.website_files.id}/*"

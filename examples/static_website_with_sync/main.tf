@@ -7,8 +7,8 @@ module "website" {
   profile        = "XXX"
 
   sync_directories = [{
-    source = "./website_content"
-    target = "/"
+    local_source_directory = "./website_content"
+    s3_target_directory    = ""
   }]
 
   providers = {
