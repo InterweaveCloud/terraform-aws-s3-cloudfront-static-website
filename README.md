@@ -2,9 +2,6 @@
 
 This module provisions the infrasructure required for a static website hosted on AWS S3 and CloudFront and optionally allows syncronisation of the website content with a local directory.
 
- creates an [S3 Bucket](https://aws.amazon.com/s3/) to creates a [CloudFront Distribution](https://aws.amazon.com/cloudfront/),
-
-
 ## Key Features
 
  -  [S3 Bucket](https://aws.amazon.com/s3/) to store website content.
@@ -21,16 +18,29 @@ This module provisions the infrasructure required for a static website hosted on
  -  [Route 53 Hosted zone](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-working-with.html) which is the DNS provider for the domain. [Making Amazon Route 53 the DNS service for an existing domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/MigratingDNS.html). Note: the hosted zone only needs to manage the DNS service, domain registration does not need to be migrated!
  - [A second aws porovider configured in us-east-1](https://www.terraform.io/language/providers/configuration) as CloudFront and SSL certificates are only available in us-east-1.
 
-To syncronisation of the website content with a local directory, the following is required:
+For syncronisation of the website content with a local directory, the following is required:
  -  [AWS CLI](https://aws.amazon.com/cli/) installed locally - [installation instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
- -  [Configure a named profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) using `aws configure --profile NAME` command. This is used for the aws s3 sync command.
+ -  [Configure a named profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html) using `aws configure --profile NAME` command. This is used for the aws s3 sync command which is executed locally. Profiles are preferred over keys and secrets.
 
 
 ## Usage
 [Example available here](https://github.com/DevOpsNavy/s3-cloudfront-static-website/tree/main/examples/static_website_with_sync)
 
 ```javascript
-# Module AP
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "4.10.0"
+    }
+  }
+}
+
+# Default provider for resource creation
+provider "aws" {
+  region  = ""
+  profile = ""
+}
 
 # Provider required in useast1 for cloudfront, SSLM Certificate
 provider "aws" {
@@ -177,9 +187,9 @@ NOTE: Be sure to merge the latest changes from "upstream" before making a pull r
 
 ## To Do
 
-## Contributing
+To dos are documented in the [project associated](https://github.com/DevOpsNavy/s3-cloudfront-static-website/projects/1) with this repo.
 
-[ToDo are captured within the GitHub project associated with this module](https://github.com/DevOpsNavy/s3-cloudfront-static-website/projects/1)
+## Contributing
 
 ### Bug Reports & Feature Requests
 
@@ -187,7 +197,7 @@ Please use the [issue tracker](https://github.com/DevOpsNavy/s3-cloudfront-stati
 
 ### Developing
 
-If you are interested in being a contributor and want to get involved in developing this project or [help out](https://cpco.io/help-out) with our other projects, we would love to hear from you! Shoot us an [email][email].
+If you are interested in being a contributor and want to get involved in developing this project or with our other projects, we would love to hear from you! Shoot us an [email][Admin@devopsnavy.co.uk].
 
 In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
 
@@ -205,3 +215,8 @@ In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
 |------|---------|
 | [Faizan Raza](https://www.linkedin.com/in/faizan-raza-997808206/) | Lead Developer |
 | [Vic Hassan](https://www.linkedin.com/in/vic-prince-hassan-619505171/) | Developer |
+
+
+## Resources Used
+
+[Terraform Docs](https://terraform-docs.io/) used for generating documentation.
