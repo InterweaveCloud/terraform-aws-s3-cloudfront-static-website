@@ -10,7 +10,7 @@ This module provisions the infrasructure required for a static website hosted on
  -  Security First - S3 Bucket is private with IAM policies to provide permissions to CloudFront.
  -  Utilises aws S3 sync command to upload website content to S3 Bucket.
 
-![image](./diagrams/Architecture.drawio.png)
+![image](https://raw.githubusercontent.com/DevOpsNavy/terraform-aws-s3-cloudfront-static-website/v0.0.0/diagrams/Architecture.drawio.png)
 
 ## Pre-quisites
 
